@@ -5,6 +5,7 @@ import Footer from './Components/Footer';
 import { useState, useEffect } from 'react';
 import AddItem from './Components/AddItem';
 import SearchItem from './Components/SearchItem';
+import apiRequest from './Components/apiRequest';
 
 
 function App() {
@@ -34,19 +35,34 @@ function App() {
         }, 2000)
     }, [])
 
-    const handleCheck = (id) => {
+    const handleCheck =  async (id) => {
         const listItems = items.map((item) =>
             item.id === id ? { ...item, check: !item.check } : item)
         setItems(listItems)
-
+        const myItem = listItems.filter((item) => item.id === id)
+        const updateOption = {
+            method : "PATCH",
+            headers : {
+                'Content-type': 'application/json'
+            },
+            body   : JSON.stringify({checked:myItem[0].checked})
+        }
+        const reqUrl = `${API_URL}/${id}`
+        const result = await apiRequest(reqUrl,updateOption)
+        if(result) setfectError(result)
     }
 
-    const handleDel = (id) => {
+    const handleDel = async (id) => {
         const delItem = items.filter((item) =>
             item.id !== id
         )
         setItems(delItem)
-
+        const deleteOption = {
+            method : "DELETE"
+        }
+        const reqUrl = `${API_URL}/${id}`
+        const result = await apiRequest(reqUrl,deleteOption)
+        if(result) setfectError(result)
     }
 
     const handleSubmit = (e) => {
@@ -57,12 +73,21 @@ function App() {
         setNewItem('')
     }
 
-    const addItem = (item) => {
+    const addItem = async (item) => {
         const id = items.length ? items[items.length - 1].id + 1 : 1
         const addNewItem = { id, check: false, item }
         const listItems = [...items, addNewItem]
         setItems(listItems)
 
+    const postOption = {
+        method : "POST",
+        headers : {
+            'Content-type': 'application/json'
+        },
+        body   : JSON.stringify(addNewItem)
+    }
+    const result = await apiRequest(API_URL,postOption)
+    if(result) setfectError(result)
     }
 
     return (

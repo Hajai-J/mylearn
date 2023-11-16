@@ -47,6 +47,7 @@ function App() {
         setItems(listItems)
         localStorage.setItem("todo_list", JSON.stringify(listItems))
     }
+    console.log("Hello commit")
 
     return (
         <div className="App">
